@@ -1,0 +1,95 @@
+#!/usr/bin/env node
+
+/**
+ * Eldrin Server CLI
+ *
+ * Wrapper script that executes the platform-specific binary.
+ */
+
+const { spawn } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+// Determine binary path
+const binDir = __dirname;
+const binaryName = process.platform === 'win32'
+  ? 'eldrin-core-binary.exe'
+  : 'eldrin-core-binary';
+const binaryPath = path.join(binDir, binaryName);
+
+// Check if binary exists
+if (!fs.existsSync(binaryPath)) {
+  console.error('Error: Eldrin Server binary not found.');
+  console.error('');
+  console.error('The binary may not have been downloaded during installation.');
+  console.error('Please try reinstalling the package:');
+  console.error('');
+  console.error('  npm uninstall -g @eldrin-project/eldrin-server');
+  console.error('  npm install -g @eldrin-project/eldrin-server');
+  console.error('');
+  process.exit(1);
+}
+
+// Get command line arguments (skip 'node' and script path)
+const args = process.argv.slice(2);
+
+// Show help if no arguments provided or help requested
+if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
+  console.log('');
+  console.log('Eldrin Server - Local development server for micro-frontends');
+  console.log('');
+  console.log('Usage:');
+  console.log('  eldrin-server start [options]    Start the Eldrin server');
+  console.log('');
+  console.log('Options:');
+  console.log('  --port <number>    Port to run on (default: 4000)');
+  console.log('  --data-dir <path>  Data directory (default: ~/.eldrin)');
+  console.log('  --help, -h         Show this help message');
+  console.log('');
+
+  if (args.length === 0) {
+    process.exit(0);
+  }
+}
+
+// Handle 'start' command - just run the binary
+if (args[0] === 'start') {
+  // Remove 'start' from args since binary doesn't need it
+  const binaryArgs = args.slice(1);
+
+  // Set environment variables from flags
+  const env = { ...process.env };
+
+  // Parse --port flag
+  const portIndex = binaryArgs.indexOf('--port');
+  if (portIndex !== -1 && binaryArgs[portIndex + 1]) {
+    env.ELDRIN_PORT = binaryArgs[portIndex + 1];
+  }
+
+  // Parse --data-dir flag
+  const dataDirIndex = binaryArgs.indexOf('--data-dir');
+  if (dataDirIndex !== -1 && binaryArgs[dataDirIndex + 1]) {
+    env.ELDRIN_DATA_DIR = binaryArgs[dataDirIndex + 1];
+  }
+
+  // Spawn the binary
+  const child = spawn(binaryPath, [], {
+    stdio: 'inherit',
+    env,
+  });
+
+  child.on('error', (error) => {
+    console.error('Failed to start Eldrin Server:', error.message);
+    process.exit(1);
+  });
+
+  child.on('exit', (code) => {
+    process.exit(code || 0);
+  });
+} else {
+  // Unknown command
+  console.error(`Unknown command: ${args[0]}`);
+  console.error('');
+  console.error('Run "eldrin-server --help" for usage information.');
+  process.exit(1);
+}

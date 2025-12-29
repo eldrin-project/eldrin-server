@@ -1,0 +1,38 @@
+{
+  "name": "@eldrin-project/eldrin-server",
+  "version": "0.0.1",
+  "description": "Eldrin Server - Local development server for the Eldrin micro-frontend platform",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eldrin-project/eldrin-server"
+  },
+  "bin": {
+    "eldrin-server": "./bin/eldrin-server"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "files": [
+    "bin/",
+    "scripts/postinstall.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "keywords": [
+    "eldrin",
+    "micro-frontend",
+    "single-spa",
+    "development-server"
+  ]
+}
