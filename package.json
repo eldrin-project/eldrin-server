@@ -1,6 +1,6 @@
 {
   "name": "@eldrin-project/eldrin-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Eldrin Server - Local development server for the Eldrin micro-frontend platform",
   "license": "MIT",
   "repository": {
